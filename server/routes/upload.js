@@ -4,6 +4,8 @@ const path = require('path');
 const fs = require('fs');
 const pdfParse = require('pdf-parse');
 const csv = require('csv-parser');
+const xlsx = require('xlsx');
+const axios = require('axios');
 const router = express.Router();
 
 const storage = multer.diskStorage({
@@ -30,35 +32,52 @@ function parseCSV(filePath) {
   });
 }
 
+// Helper to parse Excel
+function parseExcel(filePath) {
+  const workbook = xlsx.readFile(filePath);
+  const result = {};
+  workbook.SheetNames.forEach(sheet => {
+    const data = xlsx.utils.sheet_to_json(workbook.Sheets[sheet]);
+    result[sheet] = data;
+  });
+  return result;
+}
+
 router.post('/', upload.single('file'), async (req, res) => {
   const file = req.file;
   let extractedData = null;
 
   if (!file) return res.status(400).json({ error: 'No file uploaded' });
 
-  if (file.mimetype === 'application/pdf') {
-    // Parse PDF
-    const dataBuffer = fs.readFileSync(file.path);
-    const pdfData = await pdfParse(dataBuffer);
-    extractedData = pdfData.text; // Extracted text from PDF
-    // You may want to further parse tables or values from the text
-  } else if (
-    file.mimetype === 'text/csv' ||
-    file.mimetype === 'application/vnd.ms-excel' ||
-    file.mimetype === 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
-  ) {
-    // Parse CSV
-    extractedData = await parseCSV(file.path);
-    // For Excel, use a library like xlsx
-  } else {
-    return res.status(400).json({ error: 'Unsupported file type' });
+  try {
+    if (file.mimetype === 'application/pdf') {
+      const dataBuffer = fs.readFileSync(file.path);
+      const pdfData = await pdfParse(dataBuffer);
+      extractedData = { text: pdfData.text };
+    } else if (file.mimetype === 'text/csv') {
+      extractedData = await parseCSV(file.path);
+    } else if (
+      file.mimetype === 'application/vnd.ms-excel' ||
+      file.mimetype === 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+    ) {
+      extractedData = parseExcel(file.path);
+    } else {
+      return res.status(400).json({ error: 'Unsupported file type' });
+    }
+
+    // Send to AI microservice
+    const aiResponse = await axios.post('http://localhost:5001/analyze', {
+      data: extractedData
+    });
+
+    res.json({
+      extractedData,
+      aiRecommendations: aiResponse.data
+    });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'Failed to process file' });
   }
-
-  // Send extracted data to AI microservice (mock)
-  // Example: POST to http://localhost:5001/analyze with { data: extractedData }
-
-  // For demonstration, just echo extractedData
-  res.json({ extractedData });
 });
 
 module.exports = router;
