@@ -2,21 +2,21 @@
 Create a service that uses AI to analyze materials testing data (e.g., stress, fatigue, corrosion) and generate reports or insights.
 
 ## 1. User Workflow & Outputs
-A. File Upload & Analysis
+### A. File Upload & Analysis
 Users (labs, manufacturers) log in or sign up.
 They upload materials testing data files (CSV, Excel, or images of samples).
 The system confirms successful upload.
-B. AI-Driven Analysis
+### B. AI-Driven Analysis
 The backend sends uploaded data to the AI microservice.
 The AI analyzes the data (e.g., stress, fatigue, corrosion values; defect classification from images).
 Output: An analysis result (summary, charts, insights, defect detection info).
-C. Automated Reporting
+### C. Automated Reporting
 The platform generates a report:
 Key findings (e.g., max stress, fatigue life, detected corrosion, etc.)
 Data visualization (charts, graphs—can be added later)
 Recommendations or flags (if defects or failures are detected)
 Output: Downloadable report (PDF, JSON, dashboard view).
-D. Historical Records
+### D. Historical Records
 Users can view or download past reports.
 Each report is linked to a user account.
 ## 2. Technical Outputs
