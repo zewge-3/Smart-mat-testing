@@ -20,35 +20,35 @@ Output: Downloadable report (PDF, JSON, dashboard view).
 Users can view or download past reports.
 Each report is linked to a user account.
 ## 2. Technical Outputs
-Frontend:
+### Frontend:
 
 Modern dashboard UI
 File upload form
 Analysis results and report viewer
 Login/signup pages
-Backend:
+### Backend:
 
 REST API endpoints for upload, analysis, report generation, authentication
 Database storing users and reports
 Connection to AI microservice
-AI Microservice:
+### AI Microservice:
 
 Receives data
 Returns analysis (mocked or real ML model output)
 ## 3. What You’ll See in Action
-Uploading a test file
+#### Uploading a test file
 → You see a progress bar or confirmation.
 
-Clicking “Analyze”
+#### Clicking “Analyze”
 → You see analysis results (summary, details).
 
-Downloading a report
+#### Downloading a report
 → You get a PDF or JSON file summarizing the findings.
 
-Logging in/out
+#### Logging in/out
 → Secure user sessions.
 
-Viewing past analyses
+#### Viewing past analyses
 → List of previous reports, with download links.
 
 ## 4. Example Output (for a sample upload)
